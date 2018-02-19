@@ -1,0 +1,9 @@
+<div>
+  <ul *ngFor="let todo of todos$ | async" [ngClass]="'todos-list'">
+    <li>{{ todo.description }}</li>
+  </ul>
+
+  <button (click)="handleClick()">Trigger Action</button>
+
+  <app-add-todo></app-add-todo>
+</div>
