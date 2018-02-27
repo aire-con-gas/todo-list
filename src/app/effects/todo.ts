@@ -8,9 +8,11 @@ import 'rxjs/add/operator/do';
 import 'rxjs/add/operator/mergeMap';
 import 'rxjs/add/observable/of';
 import 'rxjs/add/observable/timer';
+import 'rxjs/add/operator/withLatestFrom';
+
 import { Injectable } from '@angular/core';
 import { Effect, Actions } from '@ngrx/effects';
-import { Action } from '@ngrx/store';
+import { Action, Store } from '@ngrx/store';
 import { Observable } from 'rxjs/Observable';
 import { empty } from 'rxjs/observable/empty';
 
@@ -35,7 +37,9 @@ const mockTodos = () => {
 export class TodoEffects {
   // actions$ <- dollar sign is a convention for observables
   // Actions is an Observable<Action> class from ngrx/effects
-  constructor(private actions$: Actions) { }
+  constructor(private actions$: Actions, private store$: Store<any>) {
+    console.log('>>> actions stream', this.actions$);
+  }
 
   // @Effect <- property decorator with a dispatch flag
   // PropertyDecorator doesn't seem to do much since it returns a void
@@ -67,6 +71,7 @@ export class TodoEffects {
   //   });
 
   // Second revision
+
   @Effect()
   load$: Observable<Action> = this.actions$
     .ofType(todoActions.LOAD_TODOS)
@@ -92,4 +97,35 @@ export class TodoEffects {
       // Could do an HTTP call here to write to a db
       Observable.of(new todoActions.AddTodoSuccessAction())
     );
+
+  @Effect()
+  reorder$: Observable<Action> = this.actions$
+    .ofType(todoActions.REORDER_TODO)
+    .do(val => console.log(`${todoActions.REORDER_TODO} triggered`))
+    .withLatestFrom(this.store$)
+    .map(([action, storeState]) => {
+      const todoItem = action.payload.todoItem;
+      const direction = action.payload.direction;
+      const todoItems: Todo[] = storeState.todos.todoItems.slice();
+      const atIdx = todoItem.displayOrder;
+      let swapIdx;
+      let temp;
+
+      if (direction === 'up' && atIdx > 1) {
+        swapIdx = atIdx - 1;
+      } else {
+        swapIdx = atIdx + 1;
+      }
+
+      temp = todoItems[swapIdx];
+
+      temp.displayOrder = atIdx;
+      todoItem.displayOrder = swapIdx;
+
+      todoItems[swapIdx] = todoItem;
+      todoItems[atIdx] = temp;
+      todoItems.sort((a, b) => a.displayOrder - b.displayOrder);
+      return todoItems;
+    })
+    .mergeMap(payload => Observable.of(new todoActions.ReorderTodoSuccessAction(payload)));
 }

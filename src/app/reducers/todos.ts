@@ -43,6 +43,7 @@ export function todosReducer(state = initialState, action): State {
 
   switch (action.type) {
     case todoActions.LOAD_TODOS:
+    case todoActions.REORDER_TODO:
       return {
         ...state,
         isDoingSomething: true,
@@ -78,37 +79,41 @@ export function todosReducer(state = initialState, action): State {
         ],
         isDoingSomething: false
       };
-    case todoActions.REORDER_TODO:
-      todoItem = action.payload.todoItem;
-      console.log('todoItem', todoItem);
-
-      const direction = action.payload.direction;
-      const todoItems: Todo[] = state.todoItems.slice();
-      const atIdx = todoItem.displayOrder;
-      let swapIdx;
-      let temp;
-
-      if (direction === 'up' && atIdx > 1) {
-        swapIdx = atIdx - 1;
-      } else {
-        swapIdx = atIdx + 1;
-      }
-
-      temp = todoItems[swapIdx];
-
-      temp.displayOrder = atIdx;
-      todoItem.displayOrder = swapIdx;
-
-      todoItems[swapIdx] = todoItem;
-      todoItems[atIdx] = temp;
-      todoItems.sort((a, b) => a.displayOrder - b.displayOrder);
-
-      console.log('todoItems', todoItems);
-
+    case todoActions.REORDER_TODO_SUCCESS:
       return {
-        todoItems,
+        todoItems: [...action.payload],
         isDoingSomething: false
       };
+      // todoItem = action.payload.todoItem;
+      // console.log('todoItem', todoItem);
+
+      // const direction = action.payload.direction;
+      // const todoItems: Todo[] = state.todoItems.slice();
+      // const atIdx = todoItem.displayOrder;
+      // let swapIdx;
+      // let temp;
+
+      // if (direction === 'up' && atIdx > 1) {
+      //   swapIdx = atIdx - 1;
+      // } else {
+      //   swapIdx = atIdx + 1;
+      // }
+
+      // temp = todoItems[swapIdx];
+
+      // temp.displayOrder = atIdx;
+      // todoItem.displayOrder = swapIdx;
+
+      // todoItems[swapIdx] = todoItem;
+      // todoItems[atIdx] = temp;
+      // todoItems.sort((a, b) => a.displayOrder - b.displayOrder);
+
+      // console.log('todoItems', todoItems);
+
+      // return {
+      //   todoItems,
+      //   isDoingSomething: false
+      // };
     default:
       return state;
   }

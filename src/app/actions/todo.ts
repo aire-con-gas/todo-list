@@ -44,6 +44,13 @@ export class ReorderTodoAction implements Action {
   constructor(public payload: any) {}
 }
 
+export const REORDER_TODO_SUCCESS = '[TODO] Reorder Todo Success';
+export class ReorderTodoSuccessAction implements Action {
+  readonly type = REORDER_TODO_SUCCESS;
+
+  constructor(public payload: any) {}
+}
+
 export const SIMPLE_ACTION = 'SIMPLE_ACTION';
 export class SimpleAction implements Action {
   readonly type = SIMPLE_ACTION;
