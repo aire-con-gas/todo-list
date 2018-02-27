@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { Store, select } from '@ngrx/store';
 
-import * as fromTodos from '../reducers/todos';
-import * as todoActions from '../actions/todo';
-import { Todo } from '../models/todo';
+import * as fromTodos from '../../reducers/todos';
+import * as todoActions from '../../actions/todo';
+import { Todo } from '../../models/todo';
 
 @Component({
   selector: 'app-add-todo',

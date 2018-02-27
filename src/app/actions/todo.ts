@@ -30,6 +30,20 @@ export class AddTodoSuccessAction implements Action {
   readonly type = ADD_TODO_SUCCESS;
 }
 
+export const TOGGLE_TODO = '[TODO] Toggle Todo';
+export class ToggleTodoAction implements Action {
+  readonly type = TOGGLE_TODO;
+
+  constructor(public payload: Todo) {}
+}
+
+export const REORDER_TODO = '[TODO] Reorder Todo';
+export class ReorderTodoAction implements Action {
+  readonly type = REORDER_TODO;
+
+  constructor(public payload: any) {}
+}
+
 export const SIMPLE_ACTION = 'SIMPLE_ACTION';
 export class SimpleAction implements Action {
   readonly type = SIMPLE_ACTION;
@@ -43,4 +57,4 @@ export class SimpleFinishedAction implements Action {
 // 'type' is an Typescript type alias which introduces a name
 // and type parameters that will be referenced when called upon that type alias
 // see: https://github.com/Microsoft/TypeScript/blob/master/doc/spec.md#3.10
-export type Actions = LoadTodosAction | SimpleAction | SimpleFinishedAction;
+export type Actions = LoadTodosAction | SimpleAction | SimpleFinishedAction | ReorderTodoAction;

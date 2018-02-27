@@ -3,11 +3,11 @@ import { Todo } from '../models/todo';
 import * as todoActions from '../actions/todo';
 
 export interface State {
-  todoItems: Array<Todo>;
+  todoItems: Todo[];
   isDoingSomething: boolean;
 }
 
-const initialState = {
+const initialState: State = {
   todoItems: [{
     id: 'abc',
     description: 'FooBar',
@@ -38,6 +38,9 @@ const initialState = {
 
 // Second revision
 export function todosReducer(state = initialState, action): State {
+  let filteredTodoItems;
+  let todoItem;
+
   switch (action.type) {
     case todoActions.LOAD_TODOS:
       return {
@@ -62,6 +65,48 @@ export function todosReducer(state = initialState, action): State {
       // Clear the existing state
       return {
         ...state,
+        isDoingSomething: false
+      };
+    case todoActions.TOGGLE_TODO:
+      filteredTodoItems = state.todoItems.filter(item => item.id !== action.payload.id);
+      todoItem = action.payload;
+      todoItem.completed = !todoItem.completed;
+      return {
+        todoItems: [
+          ...filteredTodoItems,
+          todoItem
+        ],
+        isDoingSomething: false
+      };
+    case todoActions.REORDER_TODO:
+      todoItem = action.payload.todoItem;
+      console.log('todoItem', todoItem);
+
+      const direction = action.payload.direction;
+      const todoItems: Todo[] = state.todoItems.slice();
+      const atIdx = todoItem.displayOrder;
+      let swapIdx;
+      let temp;
+
+      if (direction === 'up' && atIdx > 1) {
+        swapIdx = atIdx - 1;
+      } else {
+        swapIdx = atIdx + 1;
+      }
+
+      temp = todoItems[swapIdx];
+
+      temp.displayOrder = atIdx;
+      todoItem.displayOrder = swapIdx;
+
+      todoItems[swapIdx] = todoItem;
+      todoItems[atIdx] = temp;
+      todoItems.sort((a, b) => a.displayOrder - b.displayOrder);
+
+      console.log('todoItems', todoItems);
+
+      return {
+        todoItems,
         isDoingSomething: false
       };
     default:

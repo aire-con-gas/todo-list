@@ -31,4 +31,13 @@ export class TodosContainerComponent implements OnInit {
     this.store.dispatch(new todoActions.LoadTodosAction());
   }
 
+  handleTodoClick(todoItem) {
+    this.store.dispatch(new todoActions.ToggleTodoAction(todoItem));
+  }
+
+  handleReorderClick(direction, todoItem) {
+    console.log('handleReorderClick', direction, todoItem);
+    this.store.dispatch(new todoActions.ReorderTodoAction({ direction, todoItem }));
+  }
+
 }

@@ -1,9 +1,15 @@
 <div>
+  <button (click)="handleClick()">Load Todos</button>
+
   <ul *ngFor="let todo of todos$ | async" [ngClass]="'todos-list'">
-    <li>{{ todo.description }}</li>
+    <li>
+      <span><input type="checkbox" (click)="handleTodoClick(todo)" /></span>
+      <span>{{ todo.description }}</span>
+      <span><button (click)="handleReorderClick('up', todo)">Up</button></span>
+      <span><button (click)="handleReorderClick('down', todo)">Down</button></span>
+    </li>
   </ul>
 
-  <button (click)="handleClick()">Trigger Action</button>
 
   <app-add-todo></app-add-todo>
 </div>

@@ -8,8 +8,8 @@ import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 
 import { AppComponent } from './app.component';
 import { TodosContainerComponent } from './todos-container/todos-container.component';
-import { TodosListComponent } from './todos-list/todos-list.component';
-import { AddTodoComponent } from './add-todo/add-todo.component';
+import { TodosListComponent } from './todos-container/todos-list/todos-list.component';
+import { AddTodoComponent } from './todos-container/add-todo/add-todo.component';
 
 import { todosReducer } from './reducers/todos';
 import { TodoEffects } from './effects/todo';
