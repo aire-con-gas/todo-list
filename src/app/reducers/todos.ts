@@ -5,6 +5,7 @@ import * as todoActions from '../actions/todo';
 export interface State {
   todoItems: Todo[];
   isDoingSomething: boolean;
+  errors: string[];
 }
 
 const initialState: State = {
@@ -15,6 +16,7 @@ const initialState: State = {
     displayOrder: 1
   }],
   isDoingSomething: false,
+  errors: [],
 };
 
 // First revision
@@ -47,12 +49,14 @@ export function todosReducer(state = initialState, action): State {
       return {
         ...state,
         isDoingSomething: true,
+        errors: [],
       };
     case todoActions.LOAD_TODOS_SUCCESS:
       // Clear the existing state
       return {
         todoItems: [...action.payload],
-        isDoingSomething: false
+        isDoingSomething: false,
+        errors: [],
       };
     case todoActions.ADD_TODO:
       return {
@@ -60,7 +64,8 @@ export function todosReducer(state = initialState, action): State {
           ...state.todoItems,
           ...action.payload,
         ],
-        isDoingSomething: true
+        isDoingSomething: true,
+        errors: []
       };
     case todoActions.ADD_TODO_SUCCESS:
       // Clear the existing state
@@ -77,43 +82,21 @@ export function todosReducer(state = initialState, action): State {
           ...filteredTodoItems,
           todoItem
         ],
-        isDoingSomething: false
+        isDoingSomething: false,
+        errors: [],
       };
     case todoActions.REORDER_TODO_SUCCESS:
       return {
         todoItems: [...action.payload],
-        isDoingSomething: false
+        isDoingSomething: false,
+        errors: [],
       };
-      // todoItem = action.payload.todoItem;
-      // console.log('todoItem', todoItem);
-
-      // const direction = action.payload.direction;
-      // const todoItems: Todo[] = state.todoItems.slice();
-      // const atIdx = todoItem.displayOrder;
-      // let swapIdx;
-      // let temp;
-
-      // if (direction === 'up' && atIdx > 1) {
-      //   swapIdx = atIdx - 1;
-      // } else {
-      //   swapIdx = atIdx + 1;
-      // }
-
-      // temp = todoItems[swapIdx];
-
-      // temp.displayOrder = atIdx;
-      // todoItem.displayOrder = swapIdx;
-
-      // todoItems[swapIdx] = todoItem;
-      // todoItems[atIdx] = temp;
-      // todoItems.sort((a, b) => a.displayOrder - b.displayOrder);
-
-      // console.log('todoItems', todoItems);
-
-      // return {
-      //   todoItems,
-      //   isDoingSomething: false
-      // };
+    case todoActions.REORDER_TODO_FAILED:
+      return {
+        ...state,
+        isDoingSomething: false,
+        errors: action.payload,
+      };
     default:
       return state;
   }

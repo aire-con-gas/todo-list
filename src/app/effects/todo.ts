@@ -8,16 +8,24 @@ import 'rxjs/add/operator/do';
 import 'rxjs/add/operator/mergeMap';
 import 'rxjs/add/observable/of';
 import 'rxjs/add/observable/timer';
+import 'rxjs/add/observable/empty';
 import 'rxjs/add/operator/withLatestFrom';
 
 import { Injectable } from '@angular/core';
-import { Effect, Actions } from '@ngrx/effects';
-import { Action, Store } from '@ngrx/store';
+import { Effect, Actions, ofType } from '@ngrx/effects';
+import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs/Observable';
 import { empty } from 'rxjs/observable/empty';
 
 import { Todo } from '../models/todo';
 import * as todoActions from '../actions/todo';
+
+import { tap, switchMap } from 'rxjs/operators';
+
+interface Action {
+  type: string;
+  payload?: any;
+}
 
 const mockTodos = () => {
   const todos = [];
@@ -53,9 +61,11 @@ export class TodoEffects {
   // Second revision
   @Effect()
   simple$ = this.actions$
-    .ofType(todoActions.SIMPLE_ACTION)
-    .do(val => console.log('SIMPLE ACTION triggered '))
-    .switchMap(() => Observable.of({ type: todoActions.SIMPLE_FINISHED_ACTION }));
+    .pipe(
+      ofType(todoActions.SIMPLE_ACTION),
+      tap(val => console.log('SIMPLE ACTION triggered ')),
+      switchMap(() => Observable.of({ type: todoActions.SIMPLE_FINISHED_ACTION }))
+    );
 
   // First revision
   // @Effect()
@@ -104,8 +114,8 @@ export class TodoEffects {
     .do(val => console.log(`${todoActions.REORDER_TODO} triggered`))
     .withLatestFrom(this.store$)
     .map(([action, storeState]) => {
-      const todoItem = action.payload.todoItem;
-      const direction = action.payload.direction;
+      const todoItem = (action as Action).payload.todoItem;
+      const direction = (action as Action).payload.direction;
       const todoItems: Todo[] = storeState.todos.todoItems.slice();
       const atIdx = todoItem.displayOrder;
       let swapIdx;
@@ -113,8 +123,20 @@ export class TodoEffects {
 
       if (direction === 'up' && atIdx > 1) {
         swapIdx = atIdx - 1;
-      } else {
+      } else if (direction === 'down' && atIdx < todoItems.length) {
         swapIdx = atIdx + 1;
+      } else {
+        throw new Error('Can\'t reorder!');
+        // NOTE: Supposedly Observable.empty and Observable.of end the stream
+        // but this isn't true. Need to understand the Observable contract
+        // http://reactivex.io/documentation/contract.html
+
+        // return Observable.empty();
+        // return Observable.of(new todoActions.ReorderTodoFailedAction({
+        //   todoItems,
+        //   isDoingSomething: false,
+        //   errors: ['Can\'t reorder']
+        // }));
       }
 
       temp = todoItems[swapIdx];
@@ -127,5 +149,6 @@ export class TodoEffects {
       todoItems.sort((a, b) => a.displayOrder - b.displayOrder);
       return todoItems;
     })
-    .mergeMap(payload => Observable.of(new todoActions.ReorderTodoSuccessAction(payload)));
+    .mergeMap(payload => Observable.of(new todoActions.ReorderTodoSuccessAction(payload)))
+    .catch(err => Observable.of(new todoActions.ReorderTodoFailedAction(err.message)));
 }

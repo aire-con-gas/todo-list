@@ -1,9 +1,9 @@
 // Inteface of an Action from ngrx/store's dispatcher
-// export interface Action {
-//   type: string;
-//   payload?: any;
-// }
-import { Action } from '@ngrx/store';
+export interface Action {
+  type: string;
+  payload?: any;
+}
+// import { Action } from '@ngrx/store';
 import { Todo } from '../models/todo';
 
 export const LOAD_TODOS = '[TODO] Load Todos';
@@ -47,6 +47,13 @@ export class ReorderTodoAction implements Action {
 export const REORDER_TODO_SUCCESS = '[TODO] Reorder Todo Success';
 export class ReorderTodoSuccessAction implements Action {
   readonly type = REORDER_TODO_SUCCESS;
+
+  constructor(public payload: any) {}
+}
+
+export const REORDER_TODO_FAILED = '[TODO] Reorder Todo Failed';
+export class ReorderTodoFailedAction implements Action {
+  readonly type = REORDER_TODO_FAILED;
 
   constructor(public payload: any) {}
 }
